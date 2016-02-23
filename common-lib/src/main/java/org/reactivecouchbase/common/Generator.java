@@ -32,7 +32,7 @@ public class Generator<T> implements Iterable<T> {
     }
 
     public static <T extends Number> Generator<T> numeric(T from, Function<T, Option<T>> next) {
-        return new Generator<T>(from, next);
+        return new Generator<>(from, next);
     }
 
     @Override

@@ -4,9 +4,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.reactivecouchbase.functional.Lens;
 
-import java.util.function.BiFunction;
-import java.util.function.Function;
-
 public class LensTest {
 
     public static class Street {

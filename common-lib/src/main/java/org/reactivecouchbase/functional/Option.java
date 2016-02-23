@@ -232,7 +232,7 @@ public abstract class Option<T> implements Iterable<T>, Serializable {
      * Create a new Some object containing the object 'value'
      */
     public static <T> Some<T> some(T value) {
-        return new Some<T>(value);
+        return new Some<>(value);
     }
 
     /**

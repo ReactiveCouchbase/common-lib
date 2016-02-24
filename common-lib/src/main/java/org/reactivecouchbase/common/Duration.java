@@ -265,6 +265,10 @@ public class Duration {
         return new Duration(value, TimeUnit.NANOSECONDS);
     }
 
+    public final java.time.Duration toJdkDuration() {
+        return java.time.Duration.ofNanos(toNanos());
+    }
+
     public static Measurable measure() {
         return new Measurable(TimeUnit.MILLISECONDS, System.currentTimeMillis());
     }

@@ -4,6 +4,7 @@ import org.reactivecouchbase.common.Invariant;
 import org.reactivecouchbase.common.Throwables;
 
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public abstract class Try<T> {
 
@@ -32,9 +33,9 @@ public abstract class Try<T> {
         return new Failure<T>(t);
     }
 
-    public static <T> Try<T> apply(Function<Unit, T> call) {
+    public static <T> Try<T> apply(Supplier<T> call) {
         try {
-            return new Success<>(call.apply(Unit.unit()));
+            return new Success<>(call.get());
         } catch (Exception e) {
             return new Failure<>(e);
         }
@@ -83,9 +84,9 @@ public abstract class Try<T> {
         }
     }
 
-    public T getOrElse(Function<Unit, T> function) {
+    public T getOrElse(Supplier<T> function) {
         if (isFailure()) {
-            return function.apply(Unit.unit());
+            return function.get();
         }
         else return get();
     }

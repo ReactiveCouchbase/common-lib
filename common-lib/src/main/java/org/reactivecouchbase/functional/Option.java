@@ -5,9 +5,11 @@ import org.reactivecouchbase.common.Invariant;
 import org.reactivecouchbase.common.Throwables;
 
 import java.io.Serializable;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public abstract class Option<T> implements Iterable<T>, Serializable {
 
@@ -36,14 +38,14 @@ public abstract class Option<T> implements Iterable<T>, Serializable {
 
     public Option<T> orElse(T value) {
         if (isEmpty()) {
-            return Option.maybe(value);
+            return Option.apply(value);
         }
         else return this;
     }
 
-    public Option<T> orElse(Function<Unit, T> value) {
+    public Option<T> orElse(Supplier<T> value) {
         if (isEmpty()) {
-            return Option.maybe(value.apply(Unit.unit()));
+            return Option.apply(value.get());
         }
         else return this;
     }
@@ -62,9 +64,9 @@ public abstract class Option<T> implements Iterable<T>, Serializable {
         else return get();
     }
 
-    public T getOrElse(Function<Unit, T> function) {
+    public T getOrElse(Supplier<T> function) {
         if (isEmpty()) {
-            return function.apply(Unit.unit());
+            return function.get();
         }
         else return get();
     }
@@ -89,6 +91,14 @@ public abstract class Option<T> implements Iterable<T>, Serializable {
 
     public Boolean exists(Function<? super T, Boolean> f) {
         return !isEmpty() && f.apply(get());
+    }
+
+    public int count(Predicate<T> predicate) {
+        return filter(predicate).isDefined() ? 1 : 0;
+    }
+
+    public boolean exist(Predicate<T> predicate) {
+        return filter(predicate).isDefined();
     }
 
     public T getOrElse(Callable<T> function) {
@@ -186,7 +196,7 @@ public abstract class Option<T> implements Iterable<T>, Serializable {
 
     public <R> Option<R> map(Function<? super T, ? extends R> function) {
         if (isDefined()) {
-            return Option.maybe(function.apply(get()));
+            return Option.apply(function.apply(get()));
         }
         return Option.none();
     }
@@ -194,7 +204,7 @@ public abstract class Option<T> implements Iterable<T>, Serializable {
     public Option<T> map(Callable<T> function) {
         if (isDefined()) {
             try {
-                return Option.maybe(function.call());
+                return Option.apply(function.call());
             } catch (Exception e) {
                 return Option.none();
             }
@@ -220,6 +230,14 @@ public abstract class Option<T> implements Iterable<T>, Serializable {
         return Option.none();
     }
 
+    public Optional<T> toJdkOptional() {
+        if (isDefined()) {
+            return Optional.of(get());
+        } else {
+            return Optional.empty();
+        }
+    }
+
     /**
      * Returns the globally defined None object
      */
@@ -237,20 +255,20 @@ public abstract class Option<T> implements Iterable<T>, Serializable {
 
     /**
      * Create an object None if value == null else a Some object
-     * Is equivalent to the method 'apply'
-     */
-    public static <T> Option<T> maybe(T value) {
-        return apply(value);
-    }
-
-    /**
-     * Create an object None if value == null else a Some object
      */
     public static <T> Option<T> apply(T value) {
         if (value == null) {
             return Option.none();
         } else {
             return Option.some(value);
+        }
+    }
+
+    public static <T> Option<T> fromJdkOptional(Optional<T> optional) {
+        if (optional.isPresent()) {
+            return apply(optional.get());
+        } else {
+            return none();
         }
     }
 
@@ -302,17 +320,17 @@ public abstract class Option<T> implements Iterable<T>, Serializable {
         return none();
     }
 
-    public <O> O fold(Function<Unit, O> errorHandler, Function<T, O> successHandler) {
+    public <O> O fold(Supplier<O> errorHandler, Function<T, O> successHandler) {
         if (isEmpty()) {
-            return errorHandler.apply(Unit.unit());
+            return errorHandler.get();
         } else {
             return successHandler.apply(get());
         }
     }
 
-    public T fold(Function<Unit, T> errorHandler) {
+    public T fold(Supplier<T> errorHandler) {
         if (isEmpty()) {
-            return errorHandler.apply(Unit.unit());
+            return errorHandler.get();
         } else {
             return get();
         }

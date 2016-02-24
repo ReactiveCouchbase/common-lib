@@ -44,17 +44,4 @@ public class Functions {
         if (predicate == null) return null;
         return predicate::test;
     }
-
-    public static <T> Action<T> toAction(final Function<T, Unit> f) {
-        if (f == null) return null;
-        return f::apply;
-    }
-
-    public static <T> Function<T, Unit> fromAction(final Action<T> action) {
-        if (action == null) return null;
-        return input -> {
-            action.call(input);
-            return Unit.unit();
-        };
-    }
 }

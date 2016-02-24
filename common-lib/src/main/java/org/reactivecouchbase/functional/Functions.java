@@ -1,5 +1,6 @@
 package org.reactivecouchbase.functional;
 
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -43,5 +44,18 @@ public class Functions {
     public static <T> Function<T, Boolean> fromPredicate(final Predicate<T> predicate) {
         if (predicate == null) return null;
         return predicate::test;
+    }
+
+    public static <T> Consumer<T> toConsumer(final Function<T, Unit> f) {
+        if (f == null) return null;
+        return f::apply;
+    }
+
+    public static <T> Function<T, Unit> fromConsumer(final Consumer<T> action) {
+        if (action == null) return null;
+        return input -> {
+            action.accept(input);
+            return Unit.unit();
+        };
     }
 }

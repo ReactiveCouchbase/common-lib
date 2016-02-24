@@ -101,17 +101,6 @@ public abstract class Option<T> implements Iterable<T>, Serializable {
         return filter(predicate).isDefined();
     }
 
-    public T getOrElse(Callable<T> function) {
-        if (isEmpty()) {
-            try {
-                return function.call();
-            } catch (Exception e) {
-                return null;
-            }
-        }
-        else return get();
-    }
-
     public T getOrNull() {
         if (isEmpty()) {
             return null;

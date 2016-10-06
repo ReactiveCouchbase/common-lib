@@ -7,6 +7,7 @@ import org.reactivecouchbase.common.Duration;
 import org.reactivecouchbase.common.MeasuredRate;
 
 import java.math.BigDecimal;
+import java.util.function.Function;
 
 public class MeasuredRateTest {
 
